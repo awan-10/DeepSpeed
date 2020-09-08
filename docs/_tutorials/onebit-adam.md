@@ -142,13 +142,12 @@ We fixed the learning rate to 3e-5.
 | ----------- | ------------------------------------- | --------- | ----- | ----- |
 | HuggingFace | [Bert-large-uncased-whole-word-masking](https://s3.amazonaws.com/models.huggingface.co/bert/bert-large-uncased-whole-word-masking-pytorch_model.bin) | FP16      | 87.26 | 93.32 |
 
-** Note **For more details about loading checkpoint, argument parsing, initialization, forward pass, backward pass, weight update and evaluation, please refer to the [BingBertSQuAD Fine-tuning](https://www.deepspeed.ai/tutorials/bert-finetuning/) tutorial. 
+**Note:** For more details about loading checkpoint, argument parsing, initialization, forward pass, backward pass, weight update and evaluation, please refer to the [BingBertSQuAD Fine-tuning](https://www.deepspeed.ai/tutorials/bert-finetuning/) tutorial. 
 
 
 ## 2. BERT Pre-training with 1-bit Adam
 
-### Pre-requisites
-Please refer to [BERT Pre-training](/tutorials/bert-pretraining/) for more details about data downloading and pre-processing.
+To be added after #1 is reviewed. 
 
 
 
