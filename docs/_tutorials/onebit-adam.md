@@ -52,7 +52,12 @@ The 1-bit Adam feature can be used by setting the optimizer configuration option
   }
 }
 ```
-The new parameters `freeze_step` and `cuda_aware` have been added to support the 1-bit Adam features. `freeze_step` is the number of warmup steps before 1-bit compression gets applied in communication. `cuda_aware` is used to indicate that the underlying MPI library support CUDA-Aware communication. This feature is only supported on systems with InfiniBand interconnect.
+Please note two new parameters `freeze_step` and `cuda_aware` that have been added to support the 1-bit Adam feature. 
+
+`cuda_aware` is used to indicate that the underlying MPI library support CUDA-Aware communication. 
+This feature is only supported on systems with InfiniBand interconnect.
+
+`freeze_step` is the number of warmup steps before 1-bit compression gets applied to the communication. In order to determine the number of warmup steps, one strategy is to set 15-25% of the total training steps for a given model. If it provides the desired outcome, one can try to extract more performance by reducing the steps systematically. In future, we plan to introduce a threshold that can automatically search and decide for the number of warmup steps for different models. The examples below have been tuned for the number for warmup steps and the `freeze_step` is set to the best number for you in the corresponding run scripts.
 
 ## 1. BingBertSQuAD finetuning with 1-bit Adam
 
