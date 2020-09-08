@@ -146,8 +146,67 @@ We fixed the learning rate to 3e-5.
 
 
 ## 2. BERT Pre-training with 1-bit Adam
+For data downloading and pre-processing, please refer to [BERT Pre-training](https://www.deepspeed.ai/tutorials/bert-pretraining/) posts 
+for more details.
 
-To be added after #1 is reviewed. 
+### Running Pre-training with DeepSpeed and 1-bit Adam
 
+The main part of training is done in `deepspeed_train.py`, which has
+already been modified to use DeepSpeed. The `ds_train_bert_onebitadam_bsz4k_seq128.sh` and `ds_train_bert_bsz64k_seq128.sh` are the
+ shell scripts that
+help to invoke training and setup several different hyperparameters relevant
+to the training process.
+
+- **DeepSpeed-enabled:** Start training with DeepSpeed by running the command below: 
+
+```shell
+bash ds_train_bert_bsz64k_seq128.sh 
+```
+
+- **DeepSpeed with 1-bit Adam enabled:** In order to run with 1-bit Adam feature enabled, the same script (`deepspeed_train.py`) can be used but there are two options for launching this properly:
+
+### Launch with mpirun
+To enable the 1-bit compressed training, 1-bit Adam uses an MPI library (E.g. MVAPICH2, OpenMPI, etc.) as the communication backend, which means we can use `mpirun` as the launcher. 
+
+```shell
+mpirun -np [#processes] -ppn [#GPUs on each node] -hostfile [hostfile] [MPI flags] bash ds_train_bert_onebitadam_bsz4k_seq128.sh
+```
+For example, in order to use 32 GPUs (4GPUs/node, 8 nodes in total), with the support of InfiniBand, you can use MVAPICH2 as the launcher and run the following command:
+```shell
+mpirun -np 32 -ppn 4 -hostfile hosts -env MV2_USE_CUDA=1 -env MV2_SUPPORT_DL=1 -env MV2_ENABLE_AFFINITY=0 -env MV2_SMP_USE_CMA=0 bash ds_train_bert_onebitadam_bsz4k_seq128.sh
+```
+
+### Launch with deepspeed (To be added)
+
+### Configuration for BingBertSQuAD with DeepSpeed and 1-bit Adam enabled
+
+The `deepspeed_bsz4k_onebit_config_seq128.json` file gives the user the ability to specify DeepSpeed
+options in terms of batch size, micro batch size, optimizer, learning rate, and other parameters.
+
+Below is the DeepSpeed configuration file for running BERT-large pre-training with sequence length of 128.
+```json
+{
+  "train_batch_size": 4096,
+  "train_micro_batch_size_per_gpu": 64,
+  "steps_per_print": 1000,
+  "optimizer": {
+    "type": "Adam",
+    "params": {
+      "lr": 2e-4,
+      "max_grad_norm": 1.0,
+      "weight_decay": 0.01,
+      "bias_correction": false,
+      "freeze_step": 23000,
+      "cuda_aware": true
+    }
+  },
+  "fp16": {
+    "enabled": true,
+    "loss_scale": 0,
+    "initial_scale_power": 16
+  }
+}
+```
+Notice that for BERT-base training (sequence length 128), the suggested freeze_step is 16000. For the rest of the pre-training using sequence 512, we suggest to use a freeze_step of 1500.
 
 
