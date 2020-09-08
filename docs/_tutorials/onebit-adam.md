@@ -4,10 +4,11 @@ title: "1-bit Adam: Up to 5x less communication volume and up to 2x faster train
 
 In this tutorial we are going to introduce 1-bit Adam in Deepspeed, which could potentially improve the training speed in a communication intensive scenario by reducing the communication vlolume. To see how to use 1-bit Adam in DeepSpeed, we use the following two training tasks as example:  
 
-* 1. BingBertSQuAD Fine-tuning
-* 2. BERT Pre-training
+1. BingBertSQuAD Fine-tuning
+2. BERT Pre-training
 
-For more details, please refer to the [BingBertSQuAD Fine-tuning](/tutorials/bert-finetuning/) and [BERT Pre-training](/tutorials/bert-pretraining/) posts.
+For more details, please refer to the [BingBertSQuAD Fine-tuning](https://www.deepspeed.ai/tutorials/bert-finetuning/) and [BERT Pre-training](https://www.deepspeed.ai/tutorials/bert-pretraining/) posts.
+
 ## Overview
 
 If you don't already have a copy of the DeepSpeed repository, please clone in
@@ -53,7 +54,7 @@ The 1-bit Adam feature can be used by setting the optimizer configuration option
 ```
 The new parameters `freeze_step` and `cuda_aware` have been added to support the 1-bit Adam features. `freeze_step` is the number of warmup steps before 1-bit compression gets applied in communication. `cuda_aware` is used to indicate that the underlying MPI library support CUDA-Aware communication. This feature is only supported on systems with InfiniBand interconnect.
 
-## 1-bit Adam for BingBertSQuAD finetuning
+## 1. BingBertSQuAD finetuning with 1-bit Adam
 
 * Download the SQuAD dataset:
   * Training set: [train-v1.1.json](https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json)
@@ -140,7 +141,8 @@ We fixed the learning rate to 3e-5.
 For more details about loading checkpoint, arguement parsing, initialization, forward pass, backward pass, weight update and evaluation, please refer to the [BingBertSQuAD Fine-tuning](/tutorials/bert-finetuning/) tutorial. 
 
 
-## 1-bit Adam for BERT Pre-training
+## 2. BERT Pre-training with 1-bit Adam
+
 ### Pre-requisites
 Please refer to [BERT Pre-training](/tutorials/bert-pretraining/) for more details about data downloading and pre-processing.
 
