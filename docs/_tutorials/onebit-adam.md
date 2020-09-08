@@ -82,7 +82,7 @@ The first argument is the number of GPUs to train with, second argument is the p
 
 - **DeepSpeed with 1-bit Adam enabled:** In order to run with 1-bit Adam feature enabled, the same script (`nvidia_run_squad_deepspeed.py`) can be used but there are two options for launching this properly:
 
-### 1. Launch with mpirun
+### Launch with mpirun
 To enable the 1-bit compressed training, 1-bit Adam uses an MPI library (E.g. MVAPICH2, OpenMPI, etc.) as the communication backend, which means we can use `mpirun` as the launcher. 
 
 ```shell
@@ -101,7 +101,7 @@ Similarly, to use 32 GPUs (4GPUs/node, 8 nodes in total) in a TCP communication 
 mpirun -np 32 -npernode 8 -hostfile hosts [Ammar: add flag thx] bash mpi_run_squad_deepspeed.sh
 ```
 
-### 2. Launch with deepspeed (To be added)
+### Launch with deepspeed (To be added)
 
 
 ### Configuration for BingBertSQuAD with DeepSpeed and 1-bit Adam enabled
