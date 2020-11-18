@@ -34,10 +34,10 @@ title: "DeepSpeed Configuration JSON"
 
 | Fields | Value                                                        | Example                        |
 | ------ | ------------------------------------------------------------ | ------------------------------ |
-| type   | The optimizer name. DeepSpeed natively supports Adam and LAMB optimizers and will import other optimizers from [torch](https://pytorch.org/docs/stable/optim.html). | `"Adam"`                         |
+| type   | The optimizer name. DeepSpeed natively supports **Adam**, **OneBitAdam**, and **Lamb** optimizers and will import other optimizers from [torch](https://pytorch.org/docs/stable/optim.html). | `"Adam"`                         |
 | params | Dictionary of parameters to instantiate optimizer. The parameter names must match the optimizer constructor signature (e.g., for [Adam](https://pytorch.org/docs/stable/optim.html#torch.optim.Adam)). | `{"lr": 0.001, "eps": 1e-8}` |
 
-  Example of ***optimizer***
+  Example of ***optimizer*** with Adam
 
 ```json
 "optimizer": {
@@ -53,6 +53,30 @@ title: "DeepSpeed Configuration JSON"
     }
   }
 ```
+The Adam optimizer also supports the following two params keys/values in addition to the standard parameters from [torch.optim.Adam](https://pytorch.org/docs/stable/_modules/torch/optim/adam.html#Adam):
+| "params" key  | Description                                                                 | Default |
+| ------------- | --------------------------------------------------------------------------- | --------|
+| torch\_adam   | Use torch's implementation of adam instead of our fused adam implementation | false   |
+| adam\_w\_mode | Apply L2 regularization (also known as AdamW)                               | true    |
+
+  Another example of ***optimizer*** with 1-bit Adam specific parameters is as follows.
+
+```json
+"optimizer": {
+    "type": "OneBitAdam",
+    "params": {
+      "lr": 0.001,
+      "betas": [
+        0.8,
+        0.999
+      ],
+      "eps": 1e-8,
+      "weight_decay": 3e-7,
+      "freeze_step": 400,
+      "cuda_aware": true
+    }
+  }
+```
 
 ### Scheduler Parameters
 
@@ -60,8 +84,8 @@ title: "DeepSpeed Configuration JSON"
 
 | Fields | Value                                                        | Example                        |
 | ------ | ------------------------------------------------------------ | ------------------------------ |
-| type   | The scheduler name. See [here](https://deepspeed.readthedocs.io/en/latest/deepspeed.pt.html) for list of support schedulers. | `"1Cycle"`                      |
-| params | Dictionary of parameters to instantiate scheduler. The parameter names should match scheduler constructor signature. | `{"lr": 0.001, "eps": 1e-8}` |
+| type   | The scheduler name. See [here](https://deepspeed.readthedocs.io/en/latest/deepspeed.pt.html) for list of support schedulers. | `"WarmupLR"`                      |
+| params | Dictionary of parameters to instantiate scheduler. The parameter names should match scheduler constructor signature. | `{"warmup_min_lr": 0, "warmup_max_lr": 0.001}` |
 
 Example of ***scheduler***
 
@@ -213,7 +237,8 @@ Enabling and configure ZeRO memory optimizations
     "overlap_comm": false,
     "reduce_scatter": [true|false],
     "reduce_bucket_size": 500000000,
-    "contiguous_gradients" : [true|false]
+    "contiguous_gradients" : [true|false],
+    "cpu_offload": [true|false]
     }
 ```
 
@@ -265,6 +290,11 @@ Enabling and configure ZeRO memory optimizations
 | ------------------------------------------------------------ | ------- |
 | Copies the gradients to a contiguous buffer as they are produced. Avoids memory fragmentation during backward pass. Only useful when running very large models.   | `False`   |
 
+***cpu_offload***: [boolean]
+
+| Description                                                  | Default |
+| ------------------------------------------------------------ | ------- |
+| Enable offloading of optimizer memory and computation to CPU. This frees up GPU memory for larger models or batch sizes.  | `False`   |
 
 
 ### Logging

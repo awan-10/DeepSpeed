@@ -480,10 +480,17 @@ class CheckpointFunction(torch.autograd.Function):
             timers.log(['forward'])
         if SYNCHRONIZE:
             torch.cuda.synchronize()
+
+        # Tensors returned from forward() may not be differentiable.
+        if torch.is_tensor(outputs):
+            non_grad_outputs = [outputs] if not outputs.is_floating_point() else []
+        else:
+            non_grad_outputs = [o for o in outputs if not o.is_floating_point()]
+        ctx.mark_non_differentiable(*non_grad_outputs)
         return outputs
 
     @staticmethod
-    def backward(ctx, *args):
+    def backward(ctx, *grads):
         global timers
         #see_memory_usage("In backward", force=True)
         #removing pointers to the contiguous buffer memory
@@ -548,7 +555,18 @@ class CheckpointFunction(torch.autograd.Function):
 
         if isinstance(outputs, torch.Tensor):
             outputs = (outputs, )
-        torch.autograd.backward(outputs, args)
+
+        # Construct arguments to autograd.backward().
+        # This is usually just outputs and grads, but forward() can return tensors that
+        # are not differentiable.
+        output_tensors = []
+        grad_tensors = []
+        for out, grad in zip(outputs, grads):
+            if out.requires_grad:
+                output_tensors.append(out)
+                grad_tensors.append(grad)
+
+        torch.autograd.backward(output_tensors, grad_tensors)
 
         if PROFILE_TIME:
             timers('backward').stop()

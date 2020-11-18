@@ -1,7 +1,8 @@
 import torch
 import torch.distributed as dist
-
 from deepspeed.utils import logger
+from deepspeed.ops.adam import DeepSpeedCPUAdam
+from deepspeed.ops.adam import FusedAdam
 
 
 def _initialize_parameter_parallel_groups(parameter_parallel_size=None):
@@ -20,3 +21,20 @@ def _initialize_parameter_parallel_groups(parameter_parallel_size=None):
         if rank in ranks:
             my_group = group
     return my_group
+
+
+ZERO_SUPPORTED_OPTIMIZERS = [torch.optim.Adam, FusedAdam, DeepSpeedCPUAdam]
+
+# Add apex FusedAdam to supported list if apex is installed
+try:
+    import apex
+    ZERO_SUPPORTED_OPTIMIZERS.append(apex.optimizers.FusedAdam)
+except ImportError:
+    pass
+
+
+def is_zero_supported_optimizer(optimizer):
+    print(
+        f'Checking ZeRO support for optimizer={optimizer.__class__.__name__} type={type(optimizer)}'
+    )
+    return type(optimizer) in ZERO_SUPPORTED_OPTIMIZERS

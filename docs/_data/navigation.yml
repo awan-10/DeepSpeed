@@ -52,6 +52,8 @@ lnav:
         url: /tutorials/azure/
       - title: "CIFAR-10"
         url: /tutorials/cifar-10/
+      - title: "GAN"
+        url: /tutorials/gan/
       - title: "BERT Pre-training"
         url: /tutorials/bert-pretraining/
       - title: "BingBertSQuAD Fine-tuning"
@@ -66,5 +68,15 @@ lnav:
         url: /tutorials/lrrt/
       - title: "DeepSpeed Sparse Attention"
         url: /tutorials/sparse-attention/
+      - title: "ZeRO-Offload"
+        url: /tutorials/zero-offload/
+      - title: "ZeRO Redundancy Optimizer (ZeRO)"
+        url: /tutorials/zero/
+      - title: "DeepSpeed with 1-bit Adam"
+        url: /tutorials/onebit-adam/
+      - title: "Pipeline Parallelism"
+        url: /tutorials/pipeline/
+      - title: "Progressive Layer Dropping"
+        url: /tutorials/progressive_layer_dropping/
   - title: "Contributing"
     url: /contributing/
